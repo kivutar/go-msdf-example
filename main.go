@@ -25,7 +25,7 @@ func main() {
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 
-	window, err := glfw.CreateWindow(640, 480, "MSDF", nil, nil)
+	window, err := glfw.CreateWindow(512, 512, "MSDF", nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +51,6 @@ func main() {
 
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4, gl.Ptr(vertices), gl.STATIC_DRAW)
 
 	vertAttrib := uint32(gl.GetAttribLocation(program, gl.Str("vert\x00")))
 	gl.EnableVertexAttribArray(vertAttrib)
@@ -61,17 +60,22 @@ func main() {
 	gl.EnableVertexAttribArray(texCoordAttrib)
 	gl.VertexAttribPointer(texCoordAttrib, 2, gl.FLOAT, false, 4*4, gl.PtrOffset(2*4))
 
-	image, err := NewImage("foo.png")
+	image, err := loadImage("glyph.png")
 	if err != nil {
 		panic(err)
+	}
+
+	var vertices = []float32{
+		// X, Y, U, V
+		-1, -1, 0, 1, // left-bottom
+		-1, +1, 0, 0, // left-top
+		+1, -1, 1, 1, // right-bottom
+		+1, +1, 1, 0, // right-top
 	}
 
 	for !window.ShouldClose() {
 		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
-
-		va := vertexArray(window, 640-300, 480-300, 600, 600, 1)
-
 		gl.UseProgram(program)
 		gl.Enable(gl.BLEND)
 		gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
@@ -79,7 +83,7 @@ func main() {
 		gl.ActiveTexture(gl.TEXTURE0)
 		gl.BindTexture(gl.TEXTURE_2D, image)
 		gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-		gl.BufferData(gl.ARRAY_BUFFER, len(va)*4, gl.Ptr(va), gl.STATIC_DRAW)
+		gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4, gl.Ptr(vertices), gl.STATIC_DRAW)
 		gl.DrawArrays(gl.TRIANGLE_STRIP, 0, 4)
 		gl.BindVertexArray(0)
 		gl.BindTexture(gl.TEXTURE_2D, 0)
