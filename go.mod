@@ -1,4 +1,4 @@
-module github.com/kivutar/msdf
+module github.com/kivutar/go-msdf-example
 
 go 1.13
 
