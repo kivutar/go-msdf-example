@@ -17,8 +17,20 @@ out vec4 COMPAT_FRAGCOLOR;
 uniform sampler2D Texture;
 COMPAT_VARYING vec2 fragTexCoord;
 
+float median(float r, float g, float b) {
+	return max(min(r, g), min(max(r, g), b));
+}
+
 void main() {
-  COMPAT_FRAGCOLOR = COMPAT_TEXTURE(Texture, fragTexCoord);
+	vec3 sample = COMPAT_TEXTURE(Texture, fragTexCoord).rgb;
+	ivec2 sz = textureSize(Texture, 0).xy;
+	float dx = dFdx(fragTexCoord.x) * sz.x;
+	float dy = dFdy(fragTexCoord.y) * sz.y;
+	float toPixels = 8.0 * inversesqrt(dx * dx + dy * dy);
+	float sigDist = median(sample.r, sample.g, sample.b);
+	float w = fwidth(sigDist);
+	float opacity = smoothstep(0.5 - w, 0.5 + w, sigDist);
+	COMPAT_FRAGCOLOR = vec4(vec3(1.0,0.0,0.0), opacity);
 }
 ` + "\x00"
 

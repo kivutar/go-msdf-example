@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"runtime"
 
 	"github.com/go-gl/gl/all-core/gl"
@@ -26,7 +25,7 @@ func main() {
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 
-	window, err := glfw.CreateWindow(640, 480, "Testing", nil, nil)
+	window, err := glfw.CreateWindow(640, 480, "MSDF", nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -67,14 +66,11 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(image)
-
 	for !window.ShouldClose() {
 		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
-		// Do OpenGL stuff.
-		va := vertexArray(window, 100, 100, 512, 512, 1)
+		va := vertexArray(window, 640-300, 480-300, 600, 600, 1)
 
 		gl.UseProgram(program)
 		gl.Enable(gl.BLEND)
