@@ -8,8 +8,6 @@ import (
 )
 
 func init() {
-	// This is needed to arrange that main() runs on main thread.
-	// See documentation for functions that are only allowed to be called from the main thread.
 	runtime.LockOSThread()
 }
 
@@ -35,7 +33,6 @@ func main() {
 	if err := gl.Init(); err != nil {
 		panic(err)
 	}
-	gl.GetError() // ignore INVALID_ENUM that GLEW raises when using OpenGL 3.2+
 
 	program, err := newProgram(vertexShader, fragmentShader)
 	if err != nil {
@@ -44,7 +41,6 @@ func main() {
 
 	gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("Texture\x00")), 0)
 
-	// Configure the vertex data
 	var vbo, vao uint32
 	gl.GenVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)
